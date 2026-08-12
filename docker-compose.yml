@@ -2,20 +2,33 @@ services:
   web:
     build: .
     ports:
-      - "5052:5010"
+      - "5010:5010"
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/npe-store-db
     depends_on:
       - db
     volumes:
       - certificate_storage:/app/certificates
-    # This allows Docker to replicate instances if you use Docker Swarm
+      - ./static:/app/static:ro
+    restart: unless-stopped
     deploy:
-      replicas: 2
+      mode: replicated
+      replicas: 1
       resources:
         limits:
           cpus: '0.50'
           memory: 512M
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   db:
     image: postgres:15-alpine
@@ -26,4 +39,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"          
+      - "5432:5432"
+
+volumes:
+  certificate_storage:
+  postgres_data:          

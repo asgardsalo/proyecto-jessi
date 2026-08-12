@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+env/
+venv/
+.venv/
+
+# macOS
+.DS_Store
+
+# Docker
+.env
+docker-compose.override.yml
+
+# Ignore photo uploads to keep repo lightweight
+static/photos/*
+!static/photos/.gitkeep
+
+# Logs
+*.log
+
+# Database files
+*.sqlite3
+*.db
